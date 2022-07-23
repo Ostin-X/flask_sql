@@ -32,7 +32,6 @@ while student_len < 200:
     stud = StudentModel(group_id=random.randint(1, 10), first_name=random.choice(first_names),
                         last_name=random.choice(last_names))
     db.session.add(stud)
-    # db.session.commit()
     courses_list = []
     for number_of_courses in range(random.randint(1, 3)):
         course_num = random.randint(0, 9)
