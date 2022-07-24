@@ -14,6 +14,7 @@ db.session.commit()
 
 courses_name_list = {'math', 'chemistry', 'physics', 'history', 'biology', 'literature', 'swine-dog hating',
                      'musicology', 'basketball', 'driving'}
+
 courses_exist = {course.name for course in CourseModel.query.all()}
 courses_name_list = courses_name_list - courses_exist
 for course in courses_name_list:
@@ -26,6 +27,7 @@ first_names = ['Andriy', 'Vadym', 'Oleksander', 'Bohdan', 'Boryslav', 'Danilo', 
 last_names = ['Melnyk', 'Shevchenko', 'Bondarenko', 'Kovalenko', 'Boiko', 'Tkachenko', 'Kravchenko', 'Kovalchuk',
               'Koval', 'Shevchuk', 'Polyshchuk', 'Bondar', 'Olyinyk', 'Lysenko', 'Moroz', 'Marchenko', 'Tkachuk',
               'Savchenko', 'Rudenko', 'Petrenko']
+
 student_len = len(StudentModel.query.all())
 cour = CourseModel.query.all()
 while student_len < 200:
