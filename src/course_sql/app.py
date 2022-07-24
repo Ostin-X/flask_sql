@@ -1,9 +1,12 @@
+from src.course_sql.config import app
+from src.course_sql.api.routes import *
 
 
-
-db.create_all()
-from src.course_sql.db.models import GroupModel, StudentModel, CourseModel, Users, Profiles
+def create_app():
+    app.register_blueprint(api_bp)
+    return app
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app = create_app()
+    app.run(debug=True, port=5000, host='127.0.0.1')
