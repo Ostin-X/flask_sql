@@ -12,7 +12,7 @@ parser.add_argument('course', type=int)
 parser.add_argument('course_remove', type=int)
 
 
-class GroupApi(Resource):
+class StudentApi(Resource):
     def get(self):
         result = []
         args = request.args.get
@@ -27,14 +27,24 @@ class GroupApi(Resource):
                     result.append(f'{student.first_name} {student.last_name}')
             else:
                 result = f'Wrong gathering name {args("group_name")}'
+        else:
+            result = 'Be wise with your wishes'
         return result
 
     def post(self):
-        student_object = StudentModel(first_name=parser.parse_args()['first_name'],
-                                      last_name=parser.parse_args()['last_name'])
-        db.session.add(student_object)
-        db.session.commit()
-        return f'New poor soul {parser.parse_args().values()} is condemned'
+        if parser.parse_args()['first_name'] and parser.parse_args()['last_name']:
+            student_object = StudentModel(first_name=parser.parse_args()['first_name'],
+                                          last_name=parser.parse_args()['last_name'])
+            db.session.add(student_object)
+            db.session.commit()
+            result = f'New poor soul {student_object.first_name} {student_object.last_name} is condemned'
+        elif parser.parse_args()['first_name']:
+            result = f'Does poor bastard have a last name?'
+        elif parser.parse_args()['last_name']:
+            result = f'Does poor bastard have a first name?'
+        else:
+            result = 'Be wise with your wishes'
+        return result
 
     def put(self, student_id):
         student_object = StudentModel.query.filter_by(id=student_id).first()
@@ -44,9 +54,10 @@ class GroupApi(Resource):
             course_object = CourseModel.query.filter_by(id=parser.parse_args()['course']).first()
             if course_object in student_object.courses:
                 result = f'Poor soul {student_object.first_name} {student_object.last_name} already cursed with {course_object.name}'
-            student_object.courses.append(course_object)
-            db.session.commit()
-            result = f'Poor soul {student_object.first_name} {student_object.last_name} now cursed with {course_object.name}'
+            else:
+                student_object.courses.append(course_object)
+                db.session.commit()
+                result = f'Poor soul {student_object.first_name} {student_object.last_name} now cursed with {course_object.name}'
         elif parser.parse_args()['course_remove']:
             course_object = CourseModel.query.filter_by(id=parser.parse_args()['course_remove']).first()
             if course_object in student_object.courses:
@@ -54,7 +65,9 @@ class GroupApi(Resource):
                 db.session.commit()
                 result = f'Poor soul {student_object.first_name} {student_object.last_name} will suffer {course_object.name} no more'
             else:
-                result = f'Poor soul {student_object.first_name} {student_object.last_name} is free from {course_object.name}'
+                result = f'Poor soul {student_object.first_name} {student_object.last_name} already free from {course_object.name}'
+        else:
+            result = 'Be wise with your wishes'
         return result
 
     def delete(self, student_id):
@@ -68,4 +81,4 @@ class GroupApi(Resource):
         return result
 
 
-api.add_resource(GroupApi, '/group', '/group/<student_id>')
+api.add_resource(StudentApi, '/student', '/student/<student_id>')
