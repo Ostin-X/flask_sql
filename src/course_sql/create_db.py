@@ -20,8 +20,8 @@ last_names = ['Melnyk', 'Shevchenko', 'Bondarenko', 'Kovalenko', 'Boiko', 'Tkach
 def add_groups():
     group_len = len(GroupModel.query.all())
     while group_len < 10:
-        add_name = random.choice(ascii_uppercase) + random.choice(ascii_uppercase) + '-' + str(random.randint(1, 99))
-        db.session.add(GroupModel(name=add_name))
+        add_group_name = random.choice(ascii_uppercase) + random.choice(ascii_uppercase) + '-' + str(random.randint(1, 99))
+        db.session.add(GroupModel(name=add_group_name))
         group_len += 1
 
 
@@ -29,20 +29,20 @@ def add_courses(courses_name_list):
     courses_exist = {course.name for course in CourseModel.query.all()}
     courses_name_list = courses_name_list - courses_exist
     for course_name in courses_name_list:
-        course = CourseModel(name=course_name, description=course_name + ' - description here')
-        db.session.add(course)
+        course_object = CourseModel(name=course_name, description=course_name + ' - description here')
+        db.session.add(course_object)
 
 
 def add_students_and_courses_list(first_names, last_names):
     student_len = len(StudentModel.query.all())
     courses_query = CourseModel.query.all()
     while student_len < 200:
-        student = StudentModel(group_model_id=random.randint(1, 10), first_name=random.choice(first_names),
+        student_object = StudentModel(group_model_id=random.randint(1, 10), first_name=random.choice(first_names),
                                last_name=random.choice(last_names))
-        db.session.add(student)
+        db.session.add(student_object)
 
         courses_to_study = random.sample(courses_query, random.randint(1, 3))
-        student.courses.extend(courses_to_study)
+        student_object.courses.extend(courses_to_study)
 
         student_len += 1
 
