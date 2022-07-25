@@ -28,7 +28,7 @@ class StudentApi(Resource):
             else:
                 result = f'Wrong gathering name {args("group_name")}'
         else:
-            result = 'Be wise with your wishes'
+            result = 'You Get What You Give'
         return result
 
     def post(self):
