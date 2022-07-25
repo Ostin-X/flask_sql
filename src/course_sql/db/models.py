@@ -1,5 +1,5 @@
-from sqlalchemy import select, func
-from sqlalchemy.ext.hybrid import hybrid_property
+# from sqlalchemy import select, func
+# from sqlalchemy.ext.hybrid import hybrid_property
 
 from src.course_sql.config import db
 
