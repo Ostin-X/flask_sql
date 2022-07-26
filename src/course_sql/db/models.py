@@ -27,9 +27,9 @@ class GroupModel(db.Model):
 
 
 student_course_association = db.Table('student_course_association',
-                                      db.Column('student_model_id', db.Integer, db.ForeignKey('student_model.id'),
+                                      db.Column('student_id', db.Integer, db.ForeignKey('student_model.id'),
                                                 primary_key=True),
-                                      db.Column('course_model_id', db.Integer, db.ForeignKey('course_model.id'),
+                                      db.Column('course_id', db.Integer, db.ForeignKey('course_model.id'),
                                                 primary_key=True))
 
 
@@ -46,7 +46,7 @@ class CourseModel(db.Model):
 
 class StudentModel(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    group_model_id = db.Column(db.Integer, db.ForeignKey('group_model.id'))
+    group_id = db.Column(db.Integer, db.ForeignKey('group_model.id'))
     first_name = db.Column(db.String(30), nullable=False)
     last_name = db.Column(db.String(30), nullable=False)
 

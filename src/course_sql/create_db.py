@@ -20,7 +20,8 @@ last_names = ['Melnyk', 'Shevchenko', 'Bondarenko', 'Kovalenko', 'Boiko', 'Tkach
 def add_groups():
     group_len = len(GroupModel.query.all())
     while group_len < 10:
-        add_group_name = random.choice(ascii_uppercase) + random.choice(ascii_uppercase) + '-' + str(random.randint(1, 99))
+        add_group_name = random.choice(ascii_uppercase) + random.choice(ascii_uppercase) + '-' + str(
+            random.randint(1, 99))
         db.session.add(GroupModel(name=add_group_name))
         group_len += 1
 
@@ -36,9 +37,10 @@ def add_courses(courses_name_list):
 def add_students_and_courses_list(first_names, last_names):
     student_len = len(StudentModel.query.all())
     courses_query = CourseModel.query.all()
+    group_ids = [id[0] for id in GroupModel.query.with_entities(GroupModel.id).all()]
     while student_len < 200:
-        student_object = StudentModel(group_model_id=random.randint(1, 10), first_name=random.choice(first_names),
-                               last_name=random.choice(last_names))
+        student_object = StudentModel(group_id=random.choice(group_ids), first_name=random.choice(first_names),
+                                      last_name=random.choice(last_names))
         db.session.add(student_object)
 
         courses_to_study = random.sample(courses_query, random.randint(1, 3))
