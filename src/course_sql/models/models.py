@@ -1,7 +1,4 @@
-# from sqlalchemy import select, func
-# from sqlalchemy.ext.hybrid import hybrid_property
-
-from src.course_sql.config import db
+from src.course_sql.extensions.extensions import db
 
 
 class GroupModel(db.Model):
@@ -9,18 +6,6 @@ class GroupModel(db.Model):
     name = db.Column(db.String(5), unique=True, nullable=False)
 
     students = db.relationship("StudentModel", backref="group")
-
-    # @hybrid_property
-    # def child_count(self):
-    #     #return len(self.children)   # @note: use when non-dynamic relationship
-    #     return self.children.count()# @note: use when dynamic relationship
-    #
-    # @child_count.expression
-    # def child_count(cls):
-    #     return (select([func.count(Child.child_id)]).
-    #             where(Child.parent_id == cls.parent_id).
-    #             label("child_count")
-    #             )
 
     def __repr__(self):
         return f'<group {self.id}>'
@@ -38,7 +23,7 @@ class CourseModel(db.Model):
     name = db.Column(db.String(50), unique=True, nullable=False)
     description = db.Column(db.String(100))
 
-    # studies = db.relationship('StudentModel', secondary=student_course_association, backref='studying')
+    # studies = models.relationship('StudentModel', secondary=student_course_association, backref='studying')
 
     def __repr__(self):
         return f'<group {self.id}>'

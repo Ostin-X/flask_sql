@@ -1,10 +1,9 @@
-from src.course_sql.config import app, db
-from src.course_sql.db.models import GroupModel, StudentModel, CourseModel
+from sqlalchemy import create_engine
+from sqlalchemy_utils import database_exists
+from src.course_sql.extensions.extensions import app, db
+from src.course_sql.models.models import GroupModel, StudentModel, CourseModel
 import random
 from string import ascii_uppercase
-from faker import Faker
-
-fake = Faker()
 
 courses_name_list = {'math', 'chemistry', 'physics', 'history', 'biology', 'literature', 'swine-dog hating',
                      'musicology', 'basketball', 'driving'}
@@ -15,6 +14,14 @@ first_names = ['Andriy', 'Vadym', 'Oleksander', 'Bohdan', 'Boryslav', 'Danilo', 
 last_names = ['Melnyk', 'Shevchenko', 'Bondarenko', 'Kovalenko', 'Boiko', 'Tkachenko', 'Kravchenko', 'Kovalchuk',
               'Koval', 'Shevchuk', 'Polyshchuk', 'Bondar', 'Olyinyk', 'Lysenko', 'Moroz', 'Marchenko', 'Tkachuk',
               'Savchenko', 'Rudenko', 'Petrenko']
+
+def create_db(NEW_DB_NAME):
+    # uri = f"postgres://localhost/mydb"
+    if not database_exists(f"postgresql://postgres:scxscx@localhost/{NEW_DB_NAME}"):
+        engine = create_engine("postgresql://postgres:scxscx@localhost")
+        conn = engine.connect()
+        conn.execute("commit")
+        conn.execute(f"CREATE DATABASE {NEW_DB_NAME}")
 
 
 def add_groups():
@@ -50,14 +57,18 @@ def add_students_and_courses_list(first_names, last_names):
 
 
 def create_sample_data():
+    # db.drop_all()
+    create_db('coursessql')
     db.create_all()
     add_groups()
     add_courses(courses_name_list)
     add_students_and_courses_list(first_names, last_names)
+    db.session.commit()
+    print('It is done')
 
-
-create_sample_data()
-db.session.commit()
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    with app.app_context():
+        db.init_app(app)
+        create_sample_data()
+

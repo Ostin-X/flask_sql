@@ -7,4 +7,4 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['JSON_SORT_KEYS'] = False
 app.config['JSON_AS_ASCII'] = False
 
-db = SQLAlchemy(app)
+db = SQLAlchemy()
