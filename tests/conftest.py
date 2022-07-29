@@ -1,6 +1,6 @@
 from src.course_sql.models.models import *
 from src.course_sql.app import create_app
-from src.course_sql.create_db import create_db,  add_courses, add_students_and_courses_list
+from src.course_sql.create_db import create_db
 import pytest
 from src.course_sql.extensions.extensions import app, db, db_test_location
 
@@ -14,11 +14,7 @@ def client():
     create_db(TEST_DB_NAME)
     with app.app_context():
         db.init_app(app)
-    #     db.session.add(GroupModel(name='AA-11'))
-    #     db.session.add(GroupModel(name='BB-22'))
         db.drop_all()
-    #     db.create_all()
-    #     db.session.commit()
     with app.test_client() as client:
         yield client
 
