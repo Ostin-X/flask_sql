@@ -12,13 +12,9 @@ def client():
     app.config['TESTING'] = True
     TEST_DB_NAME = db_test_location.split('/')[-1]
     create_db(TEST_DB_NAME)
+    db.init_app(app)
     with app.app_context():
-        db.init_app(app)
         db.drop_all()
     with app.test_client() as client:
         yield client
 
-# @pytest.fixture()
-# def runner():
-#     app = create_app()
-#     return app.test_cli_runner()
