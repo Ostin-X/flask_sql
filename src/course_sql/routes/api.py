@@ -44,12 +44,10 @@ class StudentsApi(Resource):
         course_add = parser.parse_args()['course_add']
         course_remove = parser.parse_args()['course_remove']
         student_object = StudentModel.query.filter_by(id=student_id).first()
-
         if course_add:
             if len(student_object.courses) > 2:
                 abort(400,
                       message=f'Poor soul {student_object.first_name} {student_object.last_name} is suffering enough')
-
             course_object = CourseModel.query.filter_by(id=course_add).first()
 
             if course_object in student_object.courses:
