@@ -17,13 +17,13 @@ class StudentsApi(Resource):
         parser.add_argument('students_number', location='args')
 
         students_number = parser.parse_args()['students_number']
+        students_in_group_count = db.func.count(GroupModel.students)
 
         if students_number:
             # for group in db.session.query(GroupModel).join(StudentModel).group_by(GroupModel).having(
             #         db.func.count(GroupModel.students) <= students_number).all():
             for group in GroupModel.query.join(StudentModel).group_by(GroupModel).having(
-                    db.func.count(GroupModel.students) <= students_number).order_by(
-                    db.func.count(GroupModel.students)).all():
+                    students_in_group_count <= students_number).order_by(students_in_group_count).all():
                 result.append({group.name: len(group.students)})
         else:
             abort(400, message='You Get What You Give')
@@ -53,14 +53,14 @@ class StudentsApi(Resource):
 
         course_add = parser.parse_args()['course_add']
         course_remove = parser.parse_args()['course_remove']
-        student_object = StudentModel.query.filter_by(id=student_id).first()
+        student_object = StudentModel.query.get(student_id)
 
         if course_add:
             if len(student_object.courses) > 2:
                 abort(400,
                       message=f'Poor soul {student_object.first_name} {student_object.last_name} is suffering enough')
 
-            course_object = CourseModel.query.filter_by(id=course_add).one_or_none()
+            course_object = CourseModel.query.get(course_add)
 
             if course_object in student_object.courses:
                 abort(400,
@@ -70,12 +70,12 @@ class StudentsApi(Resource):
                 result = f'Poor soul {student_object.first_name} {student_object.last_name} now cursed with {course_object.name}'
 
         elif course_remove:
-            course_object = CourseModel.query.filter_by(id=course_remove).one_or_none()
+            course_object = CourseModel.query.get(course_remove)
             if course_object in student_object.courses:
                 student_object.courses.remove(course_object)
                 result = f'Poor soul {student_object.first_name} {student_object.last_name} will suffer {course_object.name} no more'
             else:
-                abort(400,
+                abort(404,
                       message=f'Poor soul {student_object.first_name} {student_object.last_name} already free from {course_object.name}')
         else:
             abort(400, message='Be wise with your wishes')
@@ -85,7 +85,7 @@ class StudentsApi(Resource):
         return result, 200
 
     def delete(self, student_id):
-        student_object = StudentModel.query.filter_by(id=student_id).one_or_none()
+        student_object = StudentModel.query.get(student_id)
 
         if student_object:
             db.session.delete(student_object)

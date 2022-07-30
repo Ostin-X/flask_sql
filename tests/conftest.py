@@ -9,8 +9,6 @@ from src.course_sql.extensions.extensions import app, db
 def client():
     app = create_app()
     db_test_location = 'postgresql://postgres:scxscx@localhost/test_coursessql'
-    # app.config['SQLALCHEMY_DATABASE_URI'] = db_test_location
-    # app.config['TESTING'] = True
     app.config.from_object('src.course_sql.extensions.config.DevConfig')
     TEST_DB_NAME = db_test_location.split('/')[-1]
     create_db(TEST_DB_NAME)
