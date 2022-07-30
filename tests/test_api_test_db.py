@@ -49,14 +49,13 @@ def test_post(client, first_name, last_name):
 
 def test_put(client):
     response = client.put('http://127.0.0.1:5000/api/v1/students/7',
-                          json={'first_name': 'ss', 'last_name': 'qq', 'course_add': 1})
+                          json={'course_add': 1})
     assert response.status_code == 200
     assert response.data == b'"Poor soul Student_3 Student_3 now cursed with course_name_1"\n'
-    # assert response.data == bytes(f'"New poor soul  is condemned"\n', 'utf-8')
 
 
-def test_put2(client):
+def test_put_remove(client):
     response = client.put('http://127.0.0.1:5000/api/v1/students/7',
-                          json={'first_name': 'tt', 'last_name': 'rr', 'course_remove': 1})
+                          json={'course_remove': 1})
     assert response.status_code == 200
     assert response.data == b'"Poor soul Student_3 Student_3 will suffer course_name_1 no more"\n'
