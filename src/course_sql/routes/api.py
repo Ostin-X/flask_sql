@@ -1,7 +1,7 @@
 from flask_restful import Resource, Api, reqparse, abort
 from flask import request, Blueprint
 
-from src.course_sql.models.models import *
+from src.course_sql.models.models import StudentModel, GroupModel, CourseModel, db
 
 api_bp = Blueprint('api', __name__, url_prefix='/api/v1')
 api = Api(api_bp)

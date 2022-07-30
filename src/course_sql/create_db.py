@@ -1,6 +1,6 @@
 from sqlalchemy import create_engine
 from sqlalchemy_utils import database_exists
-from src.course_sql.extensions.extensions import app, db, db_location
+from src.course_sql.extensions.extensions import app, db
 from src.course_sql.models.models import GroupModel, StudentModel, CourseModel
 import random
 from string import ascii_uppercase
@@ -56,7 +56,6 @@ def add_students_and_courses_list(first_names, last_names):
 
 
 def create_sample_data():
-    # db.drop_all()
     create_db('coursessql')
     db.create_all()
     add_groups()
@@ -67,8 +66,8 @@ def create_sample_data():
 
 
 if __name__ == '__main__':
-    app.config['SQLALCHEMY_DATABASE_URI'] = db_location
     with app.app_context():
+        app.config.from_pyfile('config.py')
         db.init_app(app)
         create_sample_data()
 
