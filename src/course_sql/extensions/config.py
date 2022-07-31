@@ -29,4 +29,4 @@ class DevConfig(Config):
     DEBUG = False
     TESTING = True
 
-    SQLALCHEMY_DATABASE_URI = 'postgresql://postgres:scxscx@localhost/test_coursessql'
+    SQLALCHEMY_DATABASE_URI = 'postgresql://ASP:qwe@localhost/test_coursessql'

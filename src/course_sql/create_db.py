@@ -67,7 +67,7 @@ def create_sample_data():
 
 if __name__ == '__main__':
     with app.app_context():
-        app.config.from_pyfile('config.py')
+        app.config.from_object('extensions.config.ProdConfig')
         db.init_app(app)
         create_sample_data()
 
