@@ -15,6 +15,7 @@ last_names = ['Melnyk', 'Shevchenko', 'Bondarenko', 'Kovalenko', 'Boiko', 'Tkach
               'Koval', 'Shevchuk', 'Polyshchuk', 'Bondar', 'Olyinyk', 'Lysenko', 'Moroz', 'Marchenko', 'Tkachuk',
               'Savchenko', 'Rudenko', 'Petrenko']
 
+
 def create_db(NEW_DB_NAME):
     if not database_exists(f"postgresql://postgres:scxscx@localhost/{NEW_DB_NAME}"):
         engine = create_engine("postgresql://postgres:scxscx@localhost")
@@ -70,4 +71,3 @@ if __name__ == '__main__':
         app.config.from_object('extensions.config.ProdConfig')
         db.init_app(app)
         create_sample_data()
-

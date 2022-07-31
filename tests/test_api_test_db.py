@@ -16,6 +16,9 @@ def test_create_tables(client):
                 db.session.add(StudentModel(group_id=int(i), first_name='Student_' + str(j),
                                             last_name='Student_' + str(j)))
         db.session.commit()
+        assert GroupModel.query.count() == 2
+        assert CourseModel.query.count() == 2
+        assert StudentModel.query.count() == 9
 
 
 @pytest.mark.parametrize('test_input, list_res',
