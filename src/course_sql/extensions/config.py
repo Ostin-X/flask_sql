@@ -1,16 +1,24 @@
-# from os import environ, path
-# from dotenv import load_dotenv
+from os import environ, path
+from dotenv import load_dotenv
+
 #
 # basedir = path.abspath(path.dirname(__file__))
 # load_dotenv(path.join(basedir, '.env'))
+# from src.course_sql.extensions.credentials import production, testing
+# import src.course_sql.extensions.credlib
+
+load_dotenv()
 
 
-class Config():
+class Config:
     """Base config."""
     # SECRET_KEY = environ.get('SECRET_KEY')
     # SESSION_COOKIE_NAME = environ.get('SESSION_COOKIE_NAME')
     STATIC_FOLDER = 'static'
     TEMPLATES_FOLDER = 'templates'
+
+    USER = environ.get('USER')
+    PASSWD = environ.get('PASSWD')
 
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
@@ -20,8 +28,9 @@ class ProdConfig(Config):
     DEBUG = True
     TESTING = False
 
-    # SQLALCHEMY_DATABASE_URI = environ.get('SQLALCHEMY_DATABASE_URI')
-    SQLALCHEMY_DATABASE_URI = 'postgresql://ASP:qwe@localhost/coursessql'
+    SRV = environ.get('SRV')
+
+    SQLALCHEMY_DATABASE_URI = f'postgresql://{Config.USER}:{Config.PASSWD}@localhost/{SRV}'
 
 
 class DevConfig(Config):
@@ -29,4 +38,7 @@ class DevConfig(Config):
     DEBUG = False
     TESTING = True
 
-    SQLALCHEMY_DATABASE_URI = 'postgresql://ASP:qwe@localhost/test_coursessql'
+    SRV = environ.get('TEST-SRV')
+
+    SQLALCHEMY_DATABASE_URI = f'postgresql://{Config.USER}:{Config.PASSWD}@localhost/{SRV}'
+    # SQLALCHEMY_DATABASE_URI = environ.get('TEST_SQLALCHEMY_DATABASE_URI')

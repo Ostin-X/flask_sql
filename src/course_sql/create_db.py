@@ -16,12 +16,12 @@ last_names = ['Melnyk', 'Shevchenko', 'Bondarenko', 'Kovalenko', 'Boiko', 'Tkach
               'Savchenko', 'Rudenko', 'Petrenko']
 
 
-def create_db(NEW_DB_NAME):
-    if not database_exists(f"postgresql://postgres:scxscx@localhost/{NEW_DB_NAME}"):
-        engine = create_engine("postgresql://postgres:scxscx@localhost")
+def create_db():
+    if not database_exists(app.config['SQLALCHEMY_DATABASE_URI']):
+        engine = create_engine(f"postgresql://{app.config['USER']}:{app.config['PASSWD']}@localhost")
         conn = engine.connect()
         conn.execute("commit")
-        conn.execute(f"CREATE DATABASE {NEW_DB_NAME}")
+        conn.execute(f"CREATE DATABASE {app.config['SRV']}")
 
 
 def add_groups():
@@ -57,7 +57,7 @@ def add_students_and_courses_list(first_names, last_names):
 
 
 def create_sample_data():
-    create_db('coursessql')
+    create_db()
     db.create_all()
     add_groups()
     add_courses(courses_name_list)
