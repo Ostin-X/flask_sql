@@ -55,6 +55,9 @@ class StudentsApi(Resource):
         course_remove = parser.parse_args()['course_remove']
         student_object = StudentModel.query.get(student_id)
 
+        if not student_object:
+            abort(400,
+                  message=f'Bastard is missing')
         if course_add:
             if len(student_object.courses) > 2:
                 abort(400,
@@ -116,5 +119,25 @@ class GroupsApi(Resource):
         return result, 200
 
 
+class CoursesApi(Resource):
+    def get(self):
+
+        result = []
+        course_name = request.args.get('course_name')
+
+        if course_name:
+            course_object = CourseModel.query.filter_by(name=course_name).one_or_none()
+            if course_object:
+                for student in course_object.students:
+                    result.append(f'{student.first_name} {student.last_name}')
+            else:
+                abort(400, message=f'Wrong sourcery name {course_name}')
+        else:
+            abort(400, message='You Get What You Give')
+
+        return {course_name: result}, 200
+
+
 api.add_resource(StudentsApi, '/students', '/students/<student_id>')
 api.add_resource(GroupsApi, '/groups')
+api.add_resource(CoursesApi, '/courses')

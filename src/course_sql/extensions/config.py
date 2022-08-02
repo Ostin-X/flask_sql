@@ -1,11 +1,8 @@
 from os import environ, path
 from dotenv import load_dotenv
 
-#
 # basedir = path.abspath(path.dirname(__file__))
 # load_dotenv(path.join(basedir, '.env'))
-# from src.course_sql.extensions.credentials import production, testing
-# import src.course_sql.extensions.credlib
 
 load_dotenv()
 
