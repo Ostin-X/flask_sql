@@ -1,7 +1,4 @@
 import pytest
-import requests
-
-
 @pytest.mark.parametrize('test_input, list_res',
                          [('/api/v1/students?students_number=4', b'{"data": [{"AA-00": 3}]}\n'),
                           ('/api/v1/groups?group_name=AA-11',

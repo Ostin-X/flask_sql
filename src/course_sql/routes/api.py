@@ -110,7 +110,7 @@ class GroupsApi(Resource):
             group_object = GroupModel.query.filter_by(name=group_name).one_or_none()
             if group_object:
                 for student in group_object.students:
-                    result.append(f'{student.first_name} {student.last_name}')
+                    result.append({'first_name': student.first_name, 'last_name': student.last_name})
             else:
                 abort(400, message=f'Wrong gathering name {group_name}')
         else:
@@ -129,7 +129,7 @@ class CoursesApi(Resource):
             course_object = CourseModel.query.filter_by(name=course_name).one_or_none()
             if course_object:
                 for student in course_object.students:
-                    result.append(f'{student.first_name} {student.last_name}')
+                    result.append({'first_name': student.first_name, 'last_name': student.last_name})
             else:
                 abort(400, message=f'Wrong sourcery name {course_name}')
         else:
