@@ -28,7 +28,7 @@ class StudentsApi(Resource):
         else:
             abort(400, message='You Get What You Give')
 
-        return result, 200
+        return {'data': result}, 200
 
     def post(self):
         parser = reqparse.RequestParser()
@@ -116,7 +116,7 @@ class GroupsApi(Resource):
         else:
             abort(400, message='You Get What You Give')
 
-        return result, 200
+        return {'data': result}, 200
 
 
 class CoursesApi(Resource):
@@ -135,7 +135,7 @@ class CoursesApi(Resource):
         else:
             abort(400, message='You Get What You Give')
 
-        return {course_name: result}, 200
+        return {'data': result}, 200
 
 
 api.add_resource(StudentsApi, '/students', '/students/<student_id>')

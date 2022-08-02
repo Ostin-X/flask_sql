@@ -3,11 +3,11 @@ import requests
 
 
 @pytest.mark.parametrize('test_input, list_res',
-                         [('/api/v1/students?students_number=4', b'[{"AA-00": 3}]\n'),
+                         [('/api/v1/students?students_number=4', b'{"data": [{"AA-00": 3}]}\n'),
                           ('/api/v1/groups?group_name=AA-11',
-                           b'["Student_0 Student_0", "Student_1 Student_1", "Student_2 Student_2", "Stude'
-                           b'nt_3 Student_3", "Student_4 Student_4", "Student_5 Student_5"]\n'),
-                          ('/api/v1/courses?course_name=course_name_1', b'[]\n')])
+                           b'{"data": ["Student_0 Student_0", "Student_1 Student_1", "Student_2 Student_2", "Stude'
+                           b'nt_3 Student_3", "Student_4 Student_4", "Student_5 Student_5"]}\n'),
+                          ('/api/v1/courses?course_name=course_name_1', b'{"data": []}\n')])
 def test_get(client, db_create, test_input, list_res):
     response = client.get(test_input)
     assert response.status_code == 200
