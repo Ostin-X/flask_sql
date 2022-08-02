@@ -1,9 +1,14 @@
 import pytest
+
+
 @pytest.mark.parametrize('test_input, list_res',
                          [('/api/v1/students?students_number=4', b'{"data": [{"AA-00": 3}]}\n'),
                           ('/api/v1/groups?group_name=AA-11',
-                           b'{"data": ["Student_0 Student_0", "Student_1 Student_1", "Student_2 Student_2", "Stude'
-                           b'nt_3 Student_3", "Student_4 Student_4", "Student_5 Student_5"]}\n'),
+                           (b'{"data": [{"first_name": "Student_0", "last_name": "Student_0"}, {"first_nam'
+                            b'e": "Student_1", "last_name": "Student_1"}, {"first_name": "Student_2", "las'
+                            b't_name": "Student_2"}, {"first_name": "Student_3", "last_name": "Student_3"}'
+                            b', {"first_name": "Student_4", "last_name": "Student_4"}, {"first_name": "Stu'
+                            b'dent_5", "last_name": "Student_5"}]}\n')),
                           ('/api/v1/courses?course_name=course_name_1', b'{"data": []}\n')])
 def test_get(client, db_create, test_input, list_res):
     response = client.get(test_input)
