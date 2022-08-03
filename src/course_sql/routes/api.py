@@ -84,6 +84,14 @@ class StudentsCourses(Resource):
                       message=f'Poor soul {student_object.first_name} {student_object.last_name} already cursed with {course_object.name}')
             else:
                 student_object.courses.append(course_object)
+                courses_list = []
+
+                #Тут потрібен новий курс, чи лист всіх?
+                # for course in student_object.courses:
+                #     courses_list.append(course.name)
+                # result = {'id': student_object.id, 'first_name': student_object.first_name,
+                #           'last_name': student_object.last_name, 'courses': courses_list}
+
                 result = {'id': student_object.id, 'first_name': student_object.first_name,
                           'last_name': student_object.last_name, 'courses': course_object.name}
         else:
