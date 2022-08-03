@@ -86,7 +86,7 @@ class StudentsCourses(Resource):
                 student_object.courses.append(course_object)
                 courses_list = []
 
-                #Тут потрібен результат тільки з новим курсом, чи лист всіх?
+                # Тут потрібен результат тільки з новим курсом, чи лист всіх?
                 # for course in student_object.courses:
                 #     courses_list.append(course.name)
                 # result = {'id': student_object.id, 'first_name': student_object.first_name,
@@ -113,13 +113,17 @@ class StudentsCourses(Resource):
 
         if course_remove:
             course_object = CourseModel.query.get(course_remove)
+
+            if not course_object:
+                abort(404, message=f'Wrong sourcery number {course_remove}')
+
             if course_object in student_object.courses:
                 student_object.courses.remove(course_object)
             else:
                 abort(404,
                       message=f'Poor soul {student_object.first_name} {student_object.last_name} already free from {course_object.name}')
         else:
-            db.session.delete(student_object)
+            abort(400, message='Be wise with your wishes')
 
         db.session.commit()
 
