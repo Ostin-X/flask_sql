@@ -6,17 +6,14 @@ from src.course_sql.models.models import StudentModel, GroupModel, CourseModel, 
 api_bp = Blueprint('api', __name__, url_prefix='/api/v1')
 api = Api(api_bp)
 
+parser = reqparse.RequestParser()
+
 
 class StudentsApi(Resource):
+
     def get(self):
         result = []
-        # students_number = request.args.get('students_number')
-        # Тут, напевно, парсер не потрібен. Цікаву цяцьку знайшов))
-        # Чи є сенс його так використовувати?
-        parser = reqparse.RequestParser()
-        parser.add_argument('students_number', location='args')
-
-        students_number = parser.parse_args()['students_number']
+        students_number = request.args.get('students_number')
         students_in_group_count = db.func.count(GroupModel.students)
 
         if students_number:
@@ -31,33 +28,47 @@ class StudentsApi(Resource):
         return {'data': result}, 200
 
     def post(self):
-        parser = reqparse.RequestParser()
         parser.add_argument('first_name', type=str, required=True)
         parser.add_argument('last_name', type=str, required=True)
+        args = parser.parse_args()
 
-        first_name = parser.parse_args()['first_name']
-        last_name = parser.parse_args()['last_name']
+        first_name = args['first_name']
+        last_name = args['last_name']
         student_object = StudentModel(first_name=first_name, last_name=last_name)
 
         db.session.add(student_object)
         db.session.commit()
 
-        result = f'New poor soul {student_object.first_name} {student_object.last_name} is condemned'
+        result = {'first_name': first_name, 'last_name': last_name}
 
-        return result, 201
+        return {'data': result}, 201
+
+    def delete(self, student_id):
+        student_object = StudentModel.query.get(student_id)
+
+        if student_object:
+            db.session.delete(student_object)
+        else:
+            abort(404, message='Bastard is missing')
+
+        db.session.commit()
+
+        return '', 204
+
+
+class StudentsCourses(Resource):
 
     def put(self, student_id):
-        parser = reqparse.RequestParser()
-        parser.add_argument('course_add', type=int)
-        parser.add_argument('course_remove', type=int)
+        parser.add_argument('course', type=int)
+        args = parser.parse_args()
 
-        course_add = parser.parse_args()['course_add']
-        course_remove = parser.parse_args()['course_remove']
+        course_add = args['course']
+
         student_object = StudentModel.query.get(student_id)
 
         if not student_object:
-            abort(400,
-                  message=f'Bastard is missing')
+            abort(400, message=f'Bastard is missing')
+
         if course_add:
             if len(student_object.courses) > 2:
                 abort(400,
@@ -65,61 +76,50 @@ class StudentsApi(Resource):
 
             course_object = CourseModel.query.get(course_add)
 
+            if not course_object:
+                abort(404, message=f'Wrong sourcery number {course_add}')
+
             if course_object in student_object.courses:
                 abort(400,
                       message=f'Poor soul {student_object.first_name} {student_object.last_name} already cursed with {course_object.name}')
             else:
                 student_object.courses.append(course_object)
-                result = f'Poor soul {student_object.first_name} {student_object.last_name} now cursed with {course_object.name}'
-
-        elif course_remove:
-            course_object = CourseModel.query.get(course_remove)
-            if course_object in student_object.courses:
-                student_object.courses.remove(course_object)
-                result = f'Poor soul {student_object.first_name} {student_object.last_name} will suffer {course_object.name} no more'
-            else:
-                abort(404,
-                      message=f'Poor soul {student_object.first_name} {student_object.last_name} already free from {course_object.name}')
+                result = {'first_name': student_object.first_name, 'last_name': student_object.last_name,
+                          'courses': course_object.name}
         else:
             abort(400, message='Be wise with your wishes')
 
         db.session.commit()
 
-        return result, 200
+        return {'data': result}, 200
 
     def delete(self, student_id):
+        parser.add_argument('course', type=int)
+        args = parser.parse_args()
+
+        course_remove = args['course']
         student_object = StudentModel.query.get(student_id)
 
-        if student_object:
-            db.session.delete(student_object)
-            db.session.commit()
-            result = f'Good Kill. Number {student_id} is no more. {StudentModel.query.count()} poor bastards to go'
-        else:
-            abort(404, message=f'Wrong target mark {student_id}')
+        if not student_object:
+            abort(404, message=f'Bastard is missing')
 
-        return result, 200
-
-
-class GroupsApi(Resource):
-    def get(self):
-
-        result = []
-        group_name = request.args.get('group_name')
-
-        if group_name:
-            group_object = GroupModel.query.filter_by(name=group_name).one_or_none()
-            if group_object:
-                for student in group_object.students:
-                    result.append({'first_name': student.first_name, 'last_name': student.last_name})
+        if course_remove:
+            course_object = CourseModel.query.get(course_remove)
+            if course_object in student_object.courses:
+                student_object.courses.remove(course_object)
             else:
-                abort(400, message=f'Wrong gathering name {group_name}')
+                abort(404,
+                      message=f'Poor soul {student_object.first_name} {student_object.last_name} already free from {course_object.name}')
         else:
-            abort(400, message='You Get What You Give')
+            db.session.delete(student_object)
 
-        return {'data': result}, 200
+        db.session.commit()
+
+        return '', 204
 
 
 class CoursesApi(Resource):
+
     def get(self):
 
         result = []
@@ -138,6 +138,6 @@ class CoursesApi(Resource):
         return {'data': result}, 200
 
 
-api.add_resource(StudentsApi, '/students', '/students/<student_id>')
-api.add_resource(GroupsApi, '/groups')
+api.add_resource(StudentsApi, '/students', '/students/<int:student_id>')
+api.add_resource(StudentsCourses, '/students/<int:student_id>/courses')
 api.add_resource(CoursesApi, '/courses')
