@@ -86,7 +86,7 @@ class StudentsCourses(Resource):
                 student_object.courses.append(course_object)
                 courses_list = []
 
-                #Тут потрібен новий курс, чи лист всіх?
+                #Тут потрібен результат тільки з новим курсом, чи лист всіх?
                 # for course in student_object.courses:
                 #     courses_list.append(course.name)
                 # result = {'id': student_object.id, 'first_name': student_object.first_name,
