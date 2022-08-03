@@ -33,7 +33,7 @@ def test_post(client, db_create, first_name, last_name):
     response = client.post('http://127.0.0.1:5000/api/v1/students',
                            json={'first_name': first_name, 'last_name': last_name})
     assert response.status_code == 201
-    assert response.data == bytes(f'{{"data": {{"first_name": "{first_name}", "last_name": "{last_name}"}}}}\n',
+    assert response.data == bytes(f'{{"data": {{"id": 10, "first_name": "{first_name}", "last_name": "{last_name}"}}}}\n',
                                   'utf-8')
 
 
@@ -49,7 +49,7 @@ def test_put(client, db_create):
     response = client.put('http://127.0.0.1:5000/api/v1/students/7/courses',
                           json={'first_name': '', 'last_name': '', 'course': 1})
     assert response.status_code == 200
-    assert response.data == (b'{"data": {"first_name": "Student_3", "last_name": "Student_3", "courses": "c'
+    assert response.data == (b'{"data": {"id": 7, "first_name": "Student_3", "last_name": "Student_3", "courses": "c'
                              b'ourse_name_1"}}\n')
     response = client.put('http://127.0.0.1:5000/api/v1/students/7/courses',
                           json={'first_name': '', 'last_name': '', 'course': 1})
@@ -74,7 +74,7 @@ def test_error_put(client, db_create):
 
 def test_delete_course_from_student(client, db_create):
     response = client.delete('http://127.0.0.1:5000/api/v1/students/7/courses',
-                             json={'first_name': '', 'last_name': 'bboo', 'course': 1})
+                             json={'first_name': '', 'last_name': '', 'course': 1})
     assert response.status_code == 204
     assert response.data == b''
 

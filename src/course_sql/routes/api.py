@@ -39,7 +39,7 @@ class StudentsApi(Resource):
         db.session.add(student_object)
         db.session.commit()
 
-        result = {'first_name': first_name, 'last_name': last_name}
+        result = {'id': student_object.id, 'first_name': first_name, 'last_name': last_name}
 
         return {'data': result}, 201
 
@@ -84,8 +84,8 @@ class StudentsCourses(Resource):
                       message=f'Poor soul {student_object.first_name} {student_object.last_name} already cursed with {course_object.name}')
             else:
                 student_object.courses.append(course_object)
-                result = {'first_name': student_object.first_name, 'last_name': student_object.last_name,
-                          'courses': course_object.name}
+                result = {'id': student_object.id, 'first_name': student_object.first_name,
+                          'last_name': student_object.last_name, 'courses': course_object.name}
         else:
             abort(400, message='Be wise with your wishes')
 
