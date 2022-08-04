@@ -27,7 +27,7 @@ def test_delete(client, db_create, res_code, res_text):
     assert response.status_code == res_code
     assert response.data == res_text
     assert StudentModel.query.count() == students_count - 1
-    assert StudentModel.query.filter_by(id=5).one_or_none() is None
+    assert StudentModel.query.filter_by(id=5).first() is None
 
 
 @pytest.mark.parametrize('first_name, last_name', [('Liolyk', 'Roundabout')])

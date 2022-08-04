@@ -62,7 +62,6 @@ class StudentsApi(Resource):
 class StudentsCourses(Resource):
 
     def put(self, student_id):
-        # parser.add_argument('course', type=int)
         args = parser_man_cou.parse_args()
 
         course_add = args['course']
@@ -105,7 +104,6 @@ class StudentsCourses(Resource):
         return {'data': result}, 200
 
     def delete(self, student_id):
-        # parser.add_argument('course', type=int)
         args = parser_man_cou.parse_args()
 
         course_remove = args['course']
