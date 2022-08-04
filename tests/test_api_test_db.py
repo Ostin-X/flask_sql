@@ -1,8 +1,9 @@
 import pytest
+from conftest import app, StudentModel
 
 
 @pytest.mark.parametrize('test_input, list_res',
-                         [('/api/v1/students?students_number=4', b'{"data": [{"AA-00": 3}]}\n'),
+                         [('/api/v1/students?students_number=4', b'{"data": ["AA-00"]}\n'),
                           ('/api/v1/courses?course_name=course_name_1', b'{"data": []}\n')])
 def test_get(client, db_create, test_input, list_res):
     response = client.get(test_input)
@@ -19,20 +20,26 @@ def test_error_get(client, db_create, test_input):
     assert response.data == b'{"message": "You Get What You Give"}\n'
 
 
-@pytest.mark.parametrize('res_code, res_text', [(204, b''), (404, b'{"message": "Bastard is missing"}\n')])
+@pytest.mark.parametrize('res_code, res_text', [(204, b'')])
 def test_delete_and_error_delete(client, db_create, res_code, res_text):
+    students_count = StudentModel.query.count()
     response = client.delete('/api/v1/students/5')
     assert response.status_code == res_code
     assert response.data == res_text
+    assert StudentModel.query.count() == students_count - 1
+    assert StudentModel.query.filter_by(id=5).one_or_none() is None
 
 
 @pytest.mark.parametrize('first_name, last_name', [('Liolyk', 'Roundabout')])
 def test_post(client, db_create, first_name, last_name):
+    students_count = StudentModel.query.count()
     response = client.post('/api/v1/students', json={'first_name': first_name, 'last_name': last_name})
     assert response.status_code == 201
     assert response.data == bytes(
         f'{{"data": {{"id": 10, "first_name": "{first_name}", "last_name": "{last_name}"}}}}\n',
         'utf-8')
+    assert StudentModel.query.count() == students_count + 1
+    assert StudentModel.query.filter_by(first_name=first_name, last_name=last_name).first() is not None
 
 
 @pytest.mark.parametrize('first_name, last_name', [('Liolyk', 'Roundabout')])
@@ -40,6 +47,9 @@ def test_error_post(client, db_create, first_name, last_name):
     response = client.post('/api/v1/students', json={'first_not_name': first_name, 'last_name': last_name})
     assert response.status_code == 400
     assert response.data == b'{"message": {"first_name": "Missing required parameter in the JSON body or the post body or the query string"}}\n'
+    response = client.post('/api/v1/students', json={'first_name': first_name, 'last_not_name': last_name})
+    assert response.status_code == 400
+    assert response.data == b'{"message": {"last_name": "Missing required parameter in the JSON body or the post body or the query string"}}\n'
 
 
 @pytest.mark.parametrize('test_student_input,test_course_input, res_code, res_text', [(7, 1, 200,
@@ -59,8 +69,7 @@ def test_put(client, db_create, test_student_input, test_course_input, res_code,
     (7, 11, 'course', 404, b'{"message": "Wrong sourcery number 11"}\n'),
     (7, 1, 'not_course', 400, b'{"message": "Be wise with your wishes"}\n')])
 def test_error_put(client, db_create, test_student_input, test_course_input, test_param, res_code, res_text):
-    response = client.put(f'/api/v1/students/{test_student_input}/courses',
-                          json={'first_name': '', 'last_name': '', test_param: test_course_input})
+    response = client.put(f'/api/v1/students/{test_student_input}/courses', json={test_param: test_course_input})
     assert response.status_code == res_code
     assert response.data == res_text
 
@@ -68,7 +77,7 @@ def test_error_put(client, db_create, test_student_input, test_course_input, tes
 @pytest.mark.parametrize('res_code, res_text', [(204, b''), (
         404, b'{"message": "Poor soul Student_3 Student_3 already free from course_name_1"}\n')])
 def test_delete_course_from_student_and_error_delete(client, db_create, res_code, res_text):
-    response = client.delete('/api/v1/students/7/courses', json={'first_name': '', 'last_name': '', 'course': 1})
+    response = client.delete('/api/v1/students/7/courses', json={'course': 1})
     assert response.status_code == res_code
     assert response.data == res_text
 
@@ -80,7 +89,7 @@ def test_delete_course_from_student_and_error_delete(client, db_create, res_code
     (7, 1, 'not_course', 400, b'{"message": "Be wise with your wishes"}\n')])
 def test_error_delete_course_from_student(client, db_create, test_student_input, test_course_input, test_param,
                                           res_code, res_text):
-    response = client.delete(f'/api/v1/students/{test_student_input}/courses', json={'first_name': '', 'last_name': '', test_param: test_course_input})
+    response = client.delete(f'/api/v1/students/{test_student_input}/courses', json={test_param: test_course_input})
     assert response.status_code == res_code
     assert response.data == res_text
     # response = client.delete('/api/v1/students/7/courses', json={'first_name': '', 'last_name': '', 'course': 1})

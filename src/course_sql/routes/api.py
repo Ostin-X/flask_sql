@@ -6,7 +6,12 @@ from src.course_sql.models.models import StudentModel, GroupModel, CourseModel, 
 api_bp = Blueprint('api', __name__, url_prefix='/api/v1')
 api = Api(api_bp)
 
-parser = reqparse.RequestParser()
+parser_add_stu = reqparse.RequestParser()
+parser_add_stu.add_argument('first_name', type=str, required=True)
+parser_add_stu.add_argument('last_name', type=str, required=True)
+
+parser_man_cou = reqparse.RequestParser()
+parser_man_cou.add_argument('course', type=int)
 
 
 class StudentsApi(Resource):
@@ -20,17 +25,15 @@ class StudentsApi(Resource):
             # for group in db.session.query(GroupModel).join(StudentModel).group_by(GroupModel).having(
             #         db.func.count(GroupModel.students) <= students_number).all():
             for group in GroupModel.query.join(StudentModel).group_by(GroupModel).having(
-                    students_in_group_count <= students_number).order_by(students_in_group_count).all():
-                result.append({group.name: len(group.students)})
+                    students_in_group_count <= students_number).all():
+                result.append(group.name)
         else:
             abort(400, message='You Get What You Give')
 
         return {'data': result}, 200
 
     def post(self):
-        parser.add_argument('first_name', type=str, required=True)
-        parser.add_argument('last_name', type=str, required=True)
-        args = parser.parse_args()
+        args = parser_add_stu.parse_args()
 
         first_name = args['first_name']
         last_name = args['last_name']
@@ -59,8 +62,8 @@ class StudentsApi(Resource):
 class StudentsCourses(Resource):
 
     def put(self, student_id):
-        parser.add_argument('course', type=int)
-        args = parser.parse_args()
+        # parser.add_argument('course', type=int)
+        args = parser_man_cou.parse_args()
 
         course_add = args['course']
 
@@ -84,7 +87,7 @@ class StudentsCourses(Resource):
                       message=f'Poor soul {student_object.first_name} {student_object.last_name} already cursed with {course_object.name}')
             else:
                 student_object.courses.append(course_object)
-                courses_list = []
+                # courses_list = []
 
                 # Тут потрібен результат тільки з новим курсом, чи лист всіх?
                 # for course in student_object.courses:
@@ -102,8 +105,8 @@ class StudentsCourses(Resource):
         return {'data': result}, 200
 
     def delete(self, student_id):
-        parser.add_argument('course', type=int)
-        args = parser.parse_args()
+        # parser.add_argument('course', type=int)
+        args = parser_man_cou.parse_args()
 
         course_remove = args['course']
         student_object = StudentModel.query.get(student_id)
