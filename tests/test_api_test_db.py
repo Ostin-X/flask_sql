@@ -1,5 +1,5 @@
 import pytest
-from conftest import app, StudentModel
+from conftest import StudentModel,CourseModel
 
 
 @pytest.mark.parametrize('test_input, list_res',
@@ -21,7 +21,7 @@ def test_error_get(client, db_create, test_input):
 
 
 @pytest.mark.parametrize('res_code, res_text', [(204, b'')])
-def test_delete_and_error_delete(client, db_create, res_code, res_text):
+def test_delete(client, db_create, res_code, res_text):
     students_count = StudentModel.query.count()
     response = client.delete('/api/v1/students/5')
     assert response.status_code == res_code
@@ -61,6 +61,7 @@ def test_put(client, db_create, test_student_input, test_course_input, res_code,
                           json={'first_name': '', 'last_name': '', 'course': test_course_input})
     assert response.status_code == res_code
     assert response.data == res_text
+    assert CourseModel.query.get(test_course_input) in StudentModel.query.get(test_student_input).courses
 
 
 @pytest.mark.parametrize('test_student_input, test_course_input, test_param, res_code, res_text', [
@@ -80,6 +81,7 @@ def test_delete_course_from_student_and_error_delete(client, db_create, res_code
     response = client.delete('/api/v1/students/7/courses', json={'course': 1})
     assert response.status_code == res_code
     assert response.data == res_text
+    assert CourseModel.query.get(1) not in StudentModel.query.get(7).courses
 
 
 @pytest.mark.parametrize('test_student_input, test_course_input, test_param, res_code, res_text', [
@@ -92,12 +94,3 @@ def test_error_delete_course_from_student(client, db_create, test_student_input,
     response = client.delete(f'/api/v1/students/{test_student_input}/courses', json={test_param: test_course_input})
     assert response.status_code == res_code
     assert response.data == res_text
-    # response = client.delete('/api/v1/students/7/courses', json={'first_name': '', 'last_name': '', 'course': 1})
-    # assert response.status_code == 404
-    # assert response.data == b'{"message": "Poor soul Student_3 Student_3 already free from course_name_1"}\n'
-    # response = client.delete('/api/v1/students/15/courses', json={'first_name': '', 'last_name': '', 'course': 1})
-    # assert response.status_code == 404
-    # assert response.data == b'{"message": "Bastard is missing"}\n'
-    # response = client.delete('/api/v1/students/15/courses', json={'first_name': '', 'last_name': '', 'not_course': 1})
-    # assert response.status_code == 404
-    # assert response.data == b'{"message": "Bastard is missing"}\n'
