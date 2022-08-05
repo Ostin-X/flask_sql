@@ -112,7 +112,7 @@ class StudentsCourses(Resource):
             course_object = CourseModel.query.get(course_remove)
 
             if not course_object:
-                abort(404, message=f'Wrong sourcery number {course_remove}')
+                abort(400, message=f'Wrong sourcery number {course_remove}')
 
             try:
                 student_object.courses.remove(course_object)
