@@ -77,7 +77,7 @@ def test_error_put(client, db_create, test_student_input, test_course_input, tes
     assert response.data == res_text
 
 
-@pytest.mark.parametrize('test_course_number', [1, 11])
+@pytest.mark.parametrize('test_course_number', [0, 1, 11])
 def test_delete_course_from_student(client, db_create, test_course_number):
     response = client.delete('/api/v1/students/7/courses', json={'course': test_course_number})
     assert response.status_code == 204

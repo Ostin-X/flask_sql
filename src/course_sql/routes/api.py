@@ -63,7 +63,6 @@ class StudentsCourses(Resource):
         args = parser_manage_courses.parse_args()
 
         course_add = args['course']
-
         student_object = StudentModel.query.get(student_id)
 
         if not student_object:
@@ -107,7 +106,7 @@ class StudentsCourses(Resource):
         if not student_object:
             abort(404, message=f'Bastard is missing')
 
-        if course_remove:
+        if course_remove is not None:
             course_object = CourseModel.query.get(course_remove)
 
             # if not course_object:
