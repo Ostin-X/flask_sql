@@ -68,8 +68,7 @@ class StudentsCourses(Resource):
 
         if not student_object:
             abort(404, message=f'Bastard is missing')
-
-        if course_add:
+        if course_add is not None:
             if len(student_object.courses) > 2:
                 abort(400,
                       message=f'Poor soul {student_object.first_name} {student_object.last_name} is suffering enough')
