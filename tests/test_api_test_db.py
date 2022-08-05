@@ -76,11 +76,11 @@ def test_error_put(client, db_create, test_student_input, test_course_input, tes
 
 
 @pytest.mark.parametrize('test_course_number, res_text', [(1, b''), (11, b'')])
-def test_delete_course_from_student_and_error_delete(client, db_create, test_course_number, res_text):
+def test_delete_course_from_student(client, db_create, test_course_number, res_text):
     response = client.delete('/api/v1/students/7/courses', json={'course': test_course_number})
     assert response.status_code == 204
     assert response.data == res_text
-    assert CourseModel.query.get(1) not in StudentModel.query.get(7).courses
+    assert CourseModel.query.get(test_course_number) not in StudentModel.query.get(7).courses
 
 
 @pytest.mark.parametrize('test_student_input, test_course_input, test_param, res_code, res_text', [
