@@ -58,7 +58,7 @@ def test_error_post(client, db_create, first_name, last_name):
                                                                                        b'{"message": "Poor soul Student_3 Student_3 already cursed with course_name_1"}\n')])
 def test_put(client, db_create, test_student_input, test_course_input, res_code, res_text):
     response = client.put(f'http://127.0.0.1:5000/api/v1/students/{test_student_input}/courses',
-                          json={'first_name': '', 'last_name': '', 'course': test_course_input})
+                          json={'course': test_course_input})
     assert response.status_code == res_code
     assert response.data == res_text
     assert CourseModel.query.get(test_course_input) in StudentModel.query.get(test_student_input).courses
