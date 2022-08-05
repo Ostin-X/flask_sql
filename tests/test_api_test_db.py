@@ -75,8 +75,7 @@ def test_error_put(client, db_create, test_student_input, test_course_input, tes
     assert response.data == res_text
 
 
-@pytest.mark.parametrize('res_code, res_text', [(204, b''), (
-        404, b'{"message": "Poor soul Student_3 Student_3 already free from course_name_1"}\n')])
+@pytest.mark.parametrize('res_code, res_text', [(204, b'')])
 def test_delete_course_from_student_and_error_delete(client, db_create, res_code, res_text):
     response = client.delete('/api/v1/students/7/courses', json={'course': 1})
     assert response.status_code == res_code
