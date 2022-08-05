@@ -111,11 +111,12 @@ class StudentsCourses(Resource):
         if course_remove:
             course_object = CourseModel.query.get(course_remove)
 
-            if not course_object:
-                abort(400, message=f'Wrong sourcery number {course_remove}')
+            # if not course_object:
+            #     abort(400, message=f'Wrong sourcery number {course_remove}')
 
             try:
                 student_object.courses.remove(course_object)
+                db.session.commit()
             except ValueError:
                 db.session.rollback()
                 # Тут не треба помилки? просто пропустити далі?
@@ -123,8 +124,6 @@ class StudentsCourses(Resource):
                 #       message=f'Poor soul {student_object.first_name} {student_object.last_name} already free from {course_object.name}')
         else:
             abort(400, message='Be wise with your wishes')
-
-        db.session.commit()
 
         return '', 204
 
