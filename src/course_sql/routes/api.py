@@ -1,6 +1,6 @@
 from flask_restful import Resource, Api, reqparse, abort
 from flask import request, Blueprint
-from sqlalchemy.exc import IntegrityError
+from sqlalchemy.exc import IntegrityError, DBAPIError
 from psycopg2.errors import UniqueViolation
 
 from src.course_sql.models.models import StudentModel, GroupModel, CourseModel, db
@@ -61,7 +61,6 @@ class StudentsCourses(Resource):
 
     def put(self, student_id):
         args = parser_manage_courses.parse_args()
-
         course_add = args['course']
         student_object = StudentModel.query.get(student_id)
 
@@ -80,22 +79,17 @@ class StudentsCourses(Resource):
             try:
                 student_object.courses.append(course_object)
                 db.session.commit()
-
-                courses_list = []
-                for course in student_object.courses:
-                    courses_list.append(course.id)
-                result = {'id': student_object.id, 'first_name': student_object.first_name,
-                          'last_name': student_object.last_name, 'courses': courses_list}
             except IntegrityError as e:
                 assert isinstance(e.orig, UniqueViolation)
                 db.session.rollback()
-                abort(400,
-                      message=f'Poor soul {student_object.first_name} {student_object.last_name} already cursed with {course_object.name}')
+            finally:
+                courses_list = [course.id for course in student_object.courses]
+                result = {'id': student_object.id, 'first_name': student_object.first_name,
+                          'last_name': student_object.last_name, 'courses': courses_list}
         else:
             abort(400, message='Be wise with your wishes')
 
         return {'data': result}, 200
-
 
     def delete(self, student_id):
         args = parser_manage_courses.parse_args()
@@ -109,17 +103,16 @@ class StudentsCourses(Resource):
         if course_remove is not None:
             course_object = CourseModel.query.get(course_remove)
 
+            #ось ця перевірка потрібна? все ще не повністю розумію логіку
             # if not course_object:
             #     abort(400, message=f'Wrong sourcery number {course_remove}')
 
             try:
                 student_object.courses.remove(course_object)
-                db.session.commit()
             except ValueError:
                 db.session.rollback()
-                # Тут не треба помилки? просто пропустити далі?
-                # abort(404,
-                #       message=f'Poor soul {student_object.first_name} {student_object.last_name} already free from {course_object.name}')
+            else:
+                db.session.commit()
         else:
             abort(400, message='Be wise with your wishes')
 
@@ -131,15 +124,15 @@ class CoursesApi(Resource):
     def get(self):
 
         result = []
-        course_name = request.args.get('course_name')
+        course_id = request.args.get('course_id')
 
-        if course_name:
-            course_object = CourseModel.query.filter_by(name=course_name).one_or_none()
+        if course_id:
+            course_object = CourseModel.query.get(course_id)
             if course_object:
                 for student in course_object.students:
                     result.append({'id': student.id, 'first_name': student.first_name, 'last_name': student.last_name})
             else:
-                abort(400, message=f'Wrong sourcery name {course_name}')
+                abort(400, message=f'Wrong sourcery id {course_id}')
         else:
             abort(400, message='You Get What You Give')
 
