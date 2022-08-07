@@ -8,7 +8,7 @@ servers:
 tags:
   - name: Student Request
     description: Example API for requesting and return report requests
-  - name: Drivers Request
+  - name: StudentsCourses Request
     description: Example API for requesting and return report requests
 paths:
   /students:
@@ -44,8 +44,8 @@ paths:
                 last_name:    # <!--- form field name
                   type: string
               required:
-                - name
-                - email
+                - first_name
+                - last_name
       tags:
         - Student Request
       summary: Returns created student
@@ -68,7 +68,7 @@ paths:
 
       tags:
         - Student Request
-      summary: Returns groups Requests
+      summary: Deletes student
       responses:
         '204':
           description: OK
@@ -76,29 +76,28 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/reportRequests'
-  /report/drivers:
-    parameters:
-      - name: format
-        in: query
-        required: false
-        description: Output format XML
-        schema:
-          type: string
-          enum:
-            - xml
-            - json
-      - name: order
-        in: query
-        required: false
-        description: Output order
-        schema:
-          type: string
-          enum:
-            - desc
-            - asc
-    get:
+  /students/{student_id}/courses:
+    put:
+      parameters:
+        - name: student_id
+          in: path
+          required: true
+          description: Groups with number of students less then
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                course:          # <!--- form field name
+                  type: integer
+              required:
+                - course
       tags:
-        - Drivers Request
+        - StudentsCourses Request
       summary: Returns driverRequests
       responses:
         '200':
@@ -106,10 +105,36 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/driverRequests'
-            application/xml:
+                $ref: '#/components/schemas/reportRequests'
+    delete:
+      parameters:
+        - name: student_id
+          in: path
+          required: true
+          description: Groups with number of students less then
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                course:          # <!--- form field name
+                  type: integer
+              required:
+                - course
+      tags:
+        - StudentsCourses Request
+      summary: Returns driverRequests
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
               schema:
-                $ref: '#/components/schemas/driverRequests'
+                $ref: '#/components/schemas/reportRequests'
   /report/drivers/{driver_id}:
     parameters:
       - name: driver_id
