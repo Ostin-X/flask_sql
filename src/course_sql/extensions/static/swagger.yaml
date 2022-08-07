@@ -1,0 +1,211 @@
+openapi: 3.0.0
+info:
+  description: Rain-X
+  version: 1.0.0
+  title: Courses Flask SQL
+servers:
+  - url: /api/v1
+tags:
+  - name: Student Request
+    description: Example API for requesting and return report requests
+  - name: Drivers Request
+    description: Example API for requesting and return report requests
+paths:
+  /students:
+    get:
+      parameters:
+        - name: students_number
+          in: query
+          required: true
+          description: Groups with number of students less then
+          schema:
+            type: integer
+
+      tags:
+        - Student Request
+      summary: Returns groups Requests
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/reportRequests'
+    post:
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                first_name:          # <!--- form field name
+                  type: string
+                last_name:    # <!--- form field name
+                  type: string
+              required:
+                - name
+                - email
+      tags:
+        - Student Request
+      summary: Returns created student
+      responses:
+        '201':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/reportRequests'
+  /students/{students_id}:
+    delete:
+      parameters:
+        - name: students_id
+          in: path
+          required: true
+          description: Groups with number of students less then
+          schema:
+            type: integer
+
+      tags:
+        - Student Request
+      summary: Returns groups Requests
+      responses:
+        '204':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/reportRequests'
+  /report/drivers:
+    parameters:
+      - name: format
+        in: query
+        required: false
+        description: Output format XML
+        schema:
+          type: string
+          enum:
+            - xml
+            - json
+      - name: order
+        in: query
+        required: false
+        description: Output order
+        schema:
+          type: string
+          enum:
+            - desc
+            - asc
+    get:
+      tags:
+        - Drivers Request
+      summary: Returns driverRequests
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/driverRequests'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/driverRequests'
+  /report/drivers/{driver_id}:
+    parameters:
+      - name: driver_id
+        in: path
+        required: true
+        description: Abbreviation of the driver that we want to match
+        schema:
+          $ref: '#/components/schemas/driver_id'
+    get:
+      tags:
+        - Drivers Request
+      summary: Get driver request with given Abbr
+      parameters:
+        - in: path
+          name: driver_id
+          required: true
+          description: Driver Request id
+          schema:
+            $ref: '#/components/schemas/driver_id'
+        - name: format
+          in: query
+          required: false
+          description: Outout format XML
+          schema:
+            type: string
+            enum:
+              - xml
+              - json
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/driverRequest'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/driverRequest'
+        '400':
+          description: Failed. Misunderstood Request.
+        '404':
+          description: Failed. Book request not found.
+components:
+  schemas:
+    driver_id:
+      properties:
+        uuid:
+          type: string
+          minLength: 3
+          maxLength: 3
+          example: HAM
+    format:
+      properties:
+        enum:
+          type: string
+          minLength: 3
+          maxLength: 4
+          example: xml
+    reportRequest:
+      type: object
+      properties:
+        abbr:
+          type: string
+          format: string
+        name:
+          type: string
+          format: string
+        team:
+          type: string
+          format: string
+        lap_time:
+          type: string
+          format: string
+    reportRequests:
+      type: object
+      properties:
+        bookRequest:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/reportRequest'
+    driverRequest:
+      type: object
+      properties:
+        abbr:
+          type: string
+          format: string
+        name:
+          type: string
+          format: string
+        team:
+          type: string
+          format: string
+    driverRequests:
+      type: object
+      properties:
+        bookRequest:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/driverRequest'
