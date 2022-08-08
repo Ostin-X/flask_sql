@@ -1,6 +1,6 @@
 from flask_restful import Resource, Api, reqparse, abort
 from flask import request, Blueprint
-from sqlalchemy.exc import IntegrityError, DBAPIError
+from sqlalchemy.exc import IntegrityError
 from psycopg2.errors import UniqueViolation
 
 from src.course_sql.models.models import StudentModel, GroupModel, CourseModel, db
@@ -91,21 +91,21 @@ class StudentsCourses(Resource):
 
         return {'data': result}, 200
 
-    def delete(self, student_id):
-        args = parser_manage_courses.parse_args()
-
-        course_remove = args['course']
+    def delete(self, student_id, course_id):
+        # args = parser_manage_courses.parse_args()
+        #
+        # course_remove = args['course']
         student_object = StudentModel.query.get(student_id)
 
         if not student_object:
             abort(404, message=f'Bastard is missing')
 
-        if course_remove is not None:
-            course_object = CourseModel.query.get(course_remove)
+        if course_id is not None:
+            course_object = CourseModel.query.get(course_id)
 
-            #ось ця перевірка потрібна? все ще не повністю розумію логіку
+            # ось ця перевірка потрібна? все ще не повністю розумію логіку
             # if not course_object:
-            #     abort(400, message=f'Wrong sourcery number {course_remove}')
+            #     abort(400, message=f'Wrong sourcery number {course_id}')
 
             try:
                 student_object.courses.remove(course_object)
@@ -140,5 +140,6 @@ class CoursesApi(Resource):
 
 
 api.add_resource(StudentsApi, '/students', '/students/<int:student_id>')
-api.add_resource(StudentsCourses, '/students/<int:student_id>/courses')
+api.add_resource(StudentsCourses, '/students/<int:student_id>/courses/<int:course_id>',
+                 '/students/<int:student_id>/courses')
 api.add_resource(CoursesApi, '/courses')

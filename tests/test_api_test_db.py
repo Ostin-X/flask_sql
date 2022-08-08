@@ -88,18 +88,16 @@ def test_error_put(client, db_create, test_student_input, test_course_input, tes
 
 @pytest.mark.parametrize('test_course_number', [0, 1, 11])
 def test_delete_course_from_student(client, db_create, test_course_number):
-    response = client.delete('/api/v1/students/7/courses', json={'course': test_course_number})
+    response = client.delete(f'/api/v1/students/7/courses/{test_course_number}')
     assert response.status_code == 204
     assert response.data == b''
     assert CourseModel.query.get(test_course_number) not in StudentModel.query.get(7).courses
 
 
-@pytest.mark.parametrize('test_student_input, test_course_input, test_param, res_code, res_text', [
-    (15, 1, 'course', 404, {"message": "Bastard is missing"}),
-    # (7, 11, 'course', 404, {"message": "Wrong sourcery number 11"}),
-    (7, 1, 'not_course', 400, {"message": "Be wise with your wishes"})])
-def test_error_delete_course_from_student(client, db_create, test_student_input, test_course_input, test_param,
-                                          res_code, res_text):
-    response = client.delete(f'/api/v1/students/{test_student_input}/courses', json={test_param: test_course_input})
+@pytest.mark.parametrize('test_student_input, test_course_input, res_code, res_text', [
+    (25, 1, 404, {"message": "Bastard is missing"})])
+# (7, 11, 404, {"message": "Wrong sourcery number 11"})])
+def test_error_delete_course_from_student(client, db_create, test_student_input, test_course_input, res_code, res_text):
+    response = client.delete(f'/api/v1/students/{test_student_input}/courses/{test_course_input}')
     assert response.status_code == res_code
     assert response.json == res_text
