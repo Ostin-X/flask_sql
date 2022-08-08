@@ -47,12 +47,8 @@ class StudentsApi(Resource):
         return {'data': result}, 201
 
     def delete(self, student_id):
-        student_object = StudentModel.query.get(student_id)
-
-        if student_object:
-            db.session.delete(student_object)
-
-            db.session.commit()
+        StudentModel.query.filter_by(id=student_id).delete()
+        db.session.commit()
 
         return '', 204
 
