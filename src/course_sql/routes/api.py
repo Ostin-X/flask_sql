@@ -92,9 +92,6 @@ class StudentsCourses(Resource):
         return {'data': result}, 200
 
     def delete(self, student_id, course_id):
-        # args = parser_manage_courses.parse_args()
-        #
-        # course_remove = args['course']
         student_object = StudentModel.query.get(student_id)
 
         if not student_object:
